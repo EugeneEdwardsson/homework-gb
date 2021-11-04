@@ -49,10 +49,15 @@ class Car{
 
     
 let ferrari = sportCar(autoBr: "Ferrari", yearOfIssue: 2001, faster: .on)
-    ferrari.speedCond()
-
+    
+print(ferrari.autoBr)
+print(ferrari.speedCond())
+print(ferrari.yearOfIssue)
 
 let unimog = trunkCar(autoBr: "Unimog", yearOfIssue: 1987, trunk: .empty)
-unimog.trunkCond()
-    
+
+print(unimog.autoBr)
+print(unimog.trunkCond())
+print(unimog.yearOfIssue)
+print(unimog.trunk)
     
