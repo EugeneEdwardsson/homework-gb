@@ -1,43 +1,54 @@
 import UIKit
 
-enum autoloadSelfPropelledHowitzerErrors: Error {
-    case jammedAutomaticLoader
-    case endedShells
+enum AutoloadErrors: Error {
+    case Shellsended
+    case NotEnoughAmmo
+}
+
+struct MBTcond {
+    var ammoRequirement: Int
+    var numberOfShells: Int
 }
 
 
 class autoload {
-    var loader: Bool
-    var shells: Int
+    var totalAmmo = 10
     
-    init(loader: Bool, shells: Int) {
-    self.loader = loader
-    self.shells = shells
+    var shellbox = [
+        "Number of high-explosive projectile": MBTcond(ammoRequirement: 10, numberOfShells: 4),
+        "Number of sub-calibe projectile": MBTcond(ammoRequirement: 10, numberOfShells: 0),
+        "Number of armor-piercing incendiary projectile": MBTcond(ammoRequirement: 10, numberOfShells: 4)
+    ]
+
+    func numberOfShells(withName: String) throws {
+    guard var shells = shellbox[withName] else {
+        throw AutoloadErrors.Shellsended
     }
-    
-    func numberOfShells() throws {
-        if shells < 1 {
-            throw autoloadSelfPropelledHowitzerErrors.endedShells
+    guard shells.numberOfShells > 0 else {
+        throw AutoloadErrors.Shellsended
+    }
+        guard shells.ammoRequirement <= totalAmmo else {
+            throw AutoloadErrors.NotEnoughAmmo
         }
+    totalAmmo -= shells.ammoRequirement
+    shells.numberOfShells -= 1
+    shellbox[withName] = shells
+    print("Load your ammo: \(withName)")
     }
-    func autoLoaderStatus() throws{
-        if loader == false {
-            throw autoloadSelfPropelledHowitzerErrors .jammedAutomaticLoader
-        }else {
-            print("Automatic loader ready to work")
-        }
-    }
+
 }
-var howitzer = autoload(loader: false, shells: 0)
+
+let autoLoad = autoload()
+try? autoLoad.numberOfShells(withName: "Number of high-explosive projectile")
+autoLoad.shellbox
+autoLoad.totalAmmo
 
 do{
-    try howitzer.numberOfShells()
-} catch autoloadSelfPropelledHowitzerErrors.endedShells{
+    try autoLoad.numberOfShells(withName: "Number of sub-caliber projectile")
+} catch AutoloadErrors.Shellsended{
     print("Ended shells!")
+} catch AutoloadErrors.NotEnoughAmmo{
+    print("Critical Error: Not enough ammo to load!")
 }
-do{
-    try howitzer.autoLoaderStatus()
-} catch autoloadSelfPropelledHowitzerErrors.jammedAutomaticLoader{
-    print("Critical Error: Automatic loader jammed!")
-}
+
 
